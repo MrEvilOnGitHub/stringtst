@@ -73,7 +73,12 @@ func (t *TST) Search(s string) bool {
 }
 
 func (t *trie) insert(s string, i int) *trie {
-	c := int(s[i])
+  if i >= len(s) {
+    return t
+  }
+
+
+  c := int(s[i])
 
 	if t == nil {
 		// Node is empty, init a new node
