@@ -29,15 +29,15 @@ func insideRange(t *trie, lower, upper int) bool {
 		return false
 	}
 
-	return insideRange(t.left, lower, t.key) && isTrie(t.middle) && insideRange(t.right, t.key, upper)
+	return insideRange(t.left, lower, t.key) && t.middle.isTrie() && insideRange(t.right, t.key, upper)
 }
 
-func isTrie(t *trie) bool {
+func (t *trie) isTrie() bool {
 	return insideRange(t, int("a"[0])-1, int("z"[0])+1)
 }
 
-func isTST(t *TST) bool {
-	return isTrie(t.root)
+func (t *TST) isTST() bool {
+	return t.root.isTrie()
 }
 
 // NewTST returns a new TST with an empty tree
@@ -47,7 +47,7 @@ func NewTST() *TST {
 
 // TrieSearch searches for string s in trie t
 // (current char at pos i in s)
-func trieSearch(t *trie, s string, i int) bool {
+func (t *trie) search(s string, i int) bool {
 	if t == nil {
 		return false
 	}
@@ -59,20 +59,20 @@ func trieSearch(t *trie, s string, i int) bool {
 		if i == len(s)-1 {
 			return t.complete // s is a complete word in t
 		}
-		return trieSearch(t.middle, s, i+1)
+		return t.middle.search(s, i+1)
 	} else if c < t.key {
-		return trieSearch(t.left, s, i)
+		return t.left.search(s, i)
 	} else {
-		return trieSearch(t.right, s, i)
+		return t.right.search(s, i)
 	}
 }
 
-//TSTSearch searches for string s in trie t
-func TSTSearch(t *TST, s string) bool {
-	return trieSearch(t.root, s, 0)
+// Search searches for string s in trie t
+func (t *TST) Search(s string) bool {
+	return t.root.search(s, 0)
 }
 
-func trieInsert(t *trie, s string, i int) *trie {
+func (t *trie) insert(s string, i int) *trie {
 	c := int(s[i])
 
 	if t == nil {
@@ -86,22 +86,22 @@ func trieInsert(t *trie, s string, i int) *trie {
 			return t
 		}
 		// Still chars left, recursively insert rest of string
-		t.middle = trieInsert(t.middle, s, i+1)
+		t.middle = t.middle.insert(s, i+1)
 	} else if c < t.key {
-		t.left = trieInsert(t.left, s, i)
+		t.left = t.left.insert(s, i)
 	} else {
-		t.right = trieInsert(t.right, s, i)
+		t.right = t.right.insert(s, i)
 	}
 
 	return t
 }
 
-// TSTInsert inserts string s in TST t
-func TSTInsert(t *TST, s string) {
-	t.root = trieInsert(t.root, s, 0)
+// Insert inserts string s in TST t
+func (t *TST) Insert(s string) {
+	t.root = t.root.insert(s, 0)
 }
 
-func trieHasPrefix(t *trie, s string) bool {
+func (t *trie) hasPrefix(s string) bool {
 	if len(s) == 0 {
 		return true // Empty string, prefix exists
 	} else if t == nil {
@@ -110,16 +110,16 @@ func trieHasPrefix(t *trie, s string) bool {
 		// Keep checking next chars
 		c := int(s[0])
 		if t.key == c {
-			return trieHasPrefix(t.middle, s[1:])
+			return t.middle.hasPrefix(s[1:])
 		} else if t.key < c {
-			return trieHasPrefix(t.right, s[1:])
+			return t.right.hasPrefix(s[1:])
 		} else {
-			return trieHasPrefix(t.left, s[1:])
+			return t.left.hasPrefix(s[1:])
 		}
 	}
 }
 
-// TSTHasPrefix checks if prefix s is in t
-func TSTHasPrefix(t *TST, s string) bool {
-	return trieHasPrefix(t.root, s)
+// HasPrefix checks if prefix s is in t
+func (t *TST) HasPrefix(s string) bool {
+	return t.root.hasPrefix(s)
 }
