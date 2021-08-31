@@ -52,6 +52,10 @@ func (t *trie) search(s string, i int) bool {
 		return false
 	}
 
+	if i >= len(s) {
+		return false
+	}
+
 	c := int(s[i])
 
 	if c == t.key {
@@ -73,12 +77,11 @@ func (t *TST) Search(s string) bool {
 }
 
 func (t *trie) insert(s string, i int) *trie {
-  if i >= len(s) {
-    return t
-  }
+	if i >= len(s) {
+		return t
+	}
 
-
-  c := int(s[i])
+	c := int(s[i])
 
 	if t == nil {
 		// Node is empty, init a new node
